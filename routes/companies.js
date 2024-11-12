@@ -15,11 +15,14 @@ router.get('/', async (req, res) => {
 
 // Add a new company
 router.post('/', async (req, res) => {
-  const { name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region } = req.body;
+  const { name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingYear,  keymanagement, rate, offeringProducts, pricingstrategy, customerneeds,technologyuse,competitiveadvantage, challenges, Recentnews, Productlaunch, strategicpartenrship, comments, employeesperregion,Businessstrategies, revenue, ebit, cashFlowSituation, roceandequityRatio } = req.body;
   try {
+    // Check if product is an array before calling join
+    const productsString = Array.isArray(product) ? product.join(', ') : product;
+    
     const result = await pool.query(
-      'INSERT INTO companies (name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *',
-      [name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region]
+      'INSERT INTO companies (name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingYear,keymanagement, rate, offeringProducts, pricingstrategy, customerneeds, technologyuse,competitiveadvantage, challenges, Recentnews, Productlaunch, strategicpartenrship, comments, employeesperregion, Businessstrategies, revenue, ebit, cashFlowSituation, roceandequityRatio ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32) RETURNING *',
+      [name, email, headquarters_location, r_and_d_location, country, productsString, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingYear, keymanagement, rate, offeringProducts, pricingstrategy, customerneeds, technologyuse,competitiveadvantage, challenges, Recentnews, Productlaunch, strategicpartenrship, comments, employeesperregion, Businessstrategies, revenue, ebit, cashFlowSituation, roceandequityRatio ]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -28,14 +31,16 @@ router.post('/', async (req, res) => {
   }
 });
 
+
+
 // Update an existing company
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, headquarters_location, r_and_d_location, country, product, email, employeestrength, revenues, telephone, productionvolumes, keycustomers, region } = req.body;
+  const { name, headquarters_location, r_and_d_location, country, product, email, employeestrength, revenues, telephone, productionvolumes, keycustomers, region, foundingYear, keymanagement, rate, offeringProducts, pricingstrategy, customerneeds, technologyuse, competitiveadvantage, challenges, Recentnews, Productlaunch, strategicpartenrship, comments, employeesperregion, Businessstrategies, revenue, ebit, cashFlowSituation, roceandequityRatio } = req.body;
   try {
     const result = await pool.query(
-      'UPDATE companies SET name = $1, headquarters_location = $2, r_and_d_location = $3, country = $4, product = $5, email = $6, employeestrength = $7, revenues = $8, telephone = $9, productionvolumes = $10, keycustomers = $11, region = $12 WHERE id = $13 RETURNING *',
-      [name, headquarters_location, r_and_d_location, country, product, email, employeestrength, revenues, telephone, productionvolumes, keycustomers, region, id]
+      'UPDATE companies SET name = $1, headquarters_location = $2, r_and_d_location = $3, country = $4, product = $5, email = $6, employeestrength = $7, revenues = $8, telephone = $9, productionvolumes = $10, keycustomers = $11, region = $12, foundingYear = $13, keymanagement = $14, rate = $15, offeringProducts = $16, pricingstrategy = $17, customerneeds = $18, technologyuse = $19, competitiveadvantage = $20, challenges = $21, Recentnews = $22, Productlaunch = $23, strategicpartenrship = $24, comments = $25, employeesperregion = $26, Businessstrategies = $27, revenue = $28, ebit = $29, cashFlowSituation = $30, roceandequityRatio = $31 WHERE id = $32 RETURNING *',
+      [name, headquarters_location, r_and_d_location, country, product, email, employeestrength, revenues, telephone, productionvolumes, keycustomers, region,foundingYear, keymanagement,rate, offeringProducts, pricingstrategy,customerneeds,technologyuse,competitiveadvantage,challenges,Recentnews,Productlaunch,strategicpartenrship,comments,employeesperregion,Businessstrategies,revenue,ebit,cashFlowSituation,roceandequityRatio, id]
     );
     res.json(result.rows[0]);
   } catch (err) {
