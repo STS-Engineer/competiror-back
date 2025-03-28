@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 
 // Get all companies
-router.get('/', async (req, res) => {    
+router.get('/', async (req, res) => {       
   try {
     const result = await pool.query('SELECT * FROM companies');
     res.json(result.rows);      
