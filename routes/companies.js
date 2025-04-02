@@ -17,33 +17,30 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { 
     name, email, headquarters_location, r_and_d_location, country, product, employeestrength, 
-    revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear, 
-    keymanagement, rate, offeringproducts, pricingstrategy, customerneeds, technologyuse, 
-    competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, 
-    comments, employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, 
-    roceandequityRatio, investingcashflow, freecashflow 
+    revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear 
   } = req.body;
 
   try {
-    // Ensure foundingyear is passed correctly and is not empty or invalid
-    if (!foundingyear) {
-      return res.status(400).json({ message: 'Founding year is required.' });
+    // Ensure foundingyear is a valid number
+    if (!foundingyear || isNaN(foundingyear)) {
+      return res.status(400).json({ message: 'Founding year must be a valid number.' });
     }
+
+    // Convert foundingyear to an integer
+    const formattedFoundingYear = parseInt(foundingyear, 10);
 
     // Check if 'product' is an array before calling join
     const productsString = Array.isArray(product) ? product.join(', ') : product;
 
     // Insert the data into the database
     const result = await pool.query(
-      'INSERT INTO public.companies (name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear, keymanagement, rate, offeringproducts, pricingstrategy, customerneeds, technologyuse, competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow) ' + 
-      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34) RETURNING *',
+      `INSERT INTO public.companies 
+      (name, email, headquarters_location, r_and_d_location, country, product, employeestrength, 
+      revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`,
       [
         name, email, headquarters_location, r_and_d_location, country, productsString, employeestrength, 
-        revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear, 
-        keymanagement, rate, offeringproducts, pricingstrategy, customerneeds, technologyuse, 
-        competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, 
-        comments, employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, 
-        roceandequityRatio, investingcashflow, freecashflow
+        revenues, telephone, website, productionvolumes, keycustomers, region, formattedFoundingYear
       ]
     );
 
@@ -53,6 +50,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 
