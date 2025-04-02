@@ -24,28 +24,29 @@ router.post('/', async (req, res) => {
     // Convert product array to JSON format
     const productsJSON = Array.isArray(product) ? JSON.stringify(product) : product;
 
-   
-    const fYear = fyear ? String(fyear) : null;
+    // Convert foundingyear to a string explicitly
+    const foundingYearStr = foundingyear ? String(foundingyear) : null;
 
-    console.log('Request Body:', req.body); // Debugging: Log incoming data
+    console.log('📌 Incoming Request Body:', req.body);
+    console.log('🔍 Parsed foundingYear:', foundingYearStr, '| Type:', typeof foundingYearStr);
 
     const result = await pool.query(
       `INSERT INTO companies (
         name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, 
-        telephone, website, productionvolumes, keycustomers, region,foundingyear, keymanagement
+        telephone, website, productionvolumes, keycustomers, region, foundingyear, keymanagement
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
       ) RETURNING *`,
       [
         name, email, headquarters_location, r_and_d_location, country, productsJSON, employeestrength, revenues, 
-        telephone, website, productionvolumes, keycustomers, region, foundingyear, keymanagement
+        telephone, website, productionvolumes, keycustomers, region, foundingYearStr, keymanagement
       ]
     );
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error('Error adding company:', err);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('❌ Error adding company:', err);
+    res.status(500).json({ message: 'Internal server error', error: err });
   }
 });
 
