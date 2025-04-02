@@ -15,22 +15,77 @@ router.get('/', async (req, res) => {
 
 // Add a new company
 router.post('/', async (req, res) => {
-  const { name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear,  keymanagement, rate, offeringproducts, pricingstrategy, customerneeds,technologyuse,competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion,businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow } = req.body;
+  const {
+    name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues,
+    telephone, website, productionvolumes, keycustomers, region, foundingyear, keymanagement, rate,
+    offeringproducts, pricingstrategy, customerneeds, technologyuse, competitiveadvantage, challenges,
+    recentnews, productlaunch, strategicpartenrship, comments, employeesperregion, businessstrategies,
+    revenue, ebit, operatingcashflow, roceandequityratio, investingcashflow, freecashflow
+  } = req.body;
 
   try {
-    // Check if product is an array before calling join
-    const productsString = Array.isArray(product) ? product.join(', ') : product;
+    // Convert product array to a string if needed
+    const productsString = Array.isArray(product) ? product.join(', ') : product || 'Unknown';
+
+    // Ensure all values are set (prevent NULL values)
+    const values = [
+      name || "Unknown Company",
+      email || "notprovided@example.com",
+      headquarters_location || "Not Available",
+      r_and_d_location || "Not Available",
+      country || "Not Available",
+      productsString,
+      employeestrength || 0,  // Default to 0 if null
+      revenues || 0,
+      telephone || "Not Provided",
+      website || "https://example.com",
+      productionvolumes || "0 units",
+      keycustomers || "Not Provided",
+      region || "Unknown",
+      foundingyear || 2000,  // Ensure a valid founding year
+      keymanagement || "Not Available",
+      rate || "N/A",
+      offeringproducts || "Not Specified",
+      pricingstrategy || "Not Specified",
+      customerneeds || "Not Specified",
+      technologyuse || "Not Specified",
+      competitiveadvantage || "Not Specified",
+      challenges || "Not Specified",
+      recentnews || "No recent news",
+      productlaunch || "No product launch",
+      strategicpartenrship || "No strategic partnership",
+      comments || "No comments",
+      employeesperregion || "Not Specified",
+      businessstrategies || "Not Specified",
+      revenue || 0,
+      ebit || 0,
+      operatingcashflow || 0,
+      roceandequityratio || 0,
+      investingcashflow || 0,
+      freecashflow || 0
+    ];
+
+    const query = `
+      INSERT INTO companies (
+        name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, 
+        telephone, website, productionvolumes, keycustomers, region, foundingyear, keymanagement, rate, 
+        offeringproducts, pricingstrategy, customerneeds, technologyuse, competitiveadvantage, challenges, 
+        recentnews, productlaunch, strategicpartenrship, comments, employeesperregion, businessstrategies, 
+        revenue, ebit, operatingcashflow, roceandequityratio, investingcashflow, freecashflow
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, 
+        $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34
+      ) RETURNING *`;
+
+    const result = await pool.query(query, values);
     
-    const result = await pool.query(
-      'INSERT INTO companies (name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear,  keymanagement, rate, offeringproducts, pricingstrategy, customerneeds,technologyuse,competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion,businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34) RETURNING *',
-      [name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region,foundingyear,  keymanagement, rate, offeringproducts, pricingstrategy, customerneeds,technologyuse,competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion,businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow]
-    );
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Error adding company:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 
