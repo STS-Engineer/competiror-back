@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { 
     name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, 
-    telephone, website, productionvolumes, keycustomers, region, foundingyear
+    telephone, website, productionvolumes, keycustomers, region, foundingyear, fyear
   } = req.body;
 
   try {
@@ -30,13 +30,13 @@ router.post('/', async (req, res) => {
     const result = await pool.query(
       `INSERT INTO companies (
         name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, 
-        telephone, website, productionvolumes, keycustomers, region, foundingyear
+        telephone, website, productionvolumes, keycustomers, region, foundingyear, fyear
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
       ) RETURNING *`,
       [
         name, email, headquarters_location, r_and_d_location, country, productsJSON, employeestrength, revenues, 
-        telephone, website, productionvolumes, keycustomers, region, foundingyear
+        telephone, website, productionvolumes, keycustomers, region, foundingyear, fyear
       ]
     );
 
