@@ -15,36 +15,62 @@ router.get('/', async (req, res) => {
 
 // Add a new company
 router.post('/', async (req, res) => {
+  // Debug the incoming request
+  console.log('Raw request body:', req.body);
+
+  // Destructure with null defaults
   const { 
     name, email, headquarters_location, r_and_d_location, country, product, employeestrength, 
     revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear, 
     keymanagement, rate, offeringproducts, pricingstrategy, customerneeds, technologyuse, 
-    competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, 
+    competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, // Note: Typo matches DB
     comments, employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, 
-    roceandequityRatio, investingcashflow, freecashflow 
+    roceandequityratio, // Changed to match DB (all lowercase)
+    investingcashflow, freecashflow 
   } = req.body;
 
   try {
-    // Check if 'product' is an array before calling join
+    // Handle array fields
     const productsString = Array.isArray(product) ? product.join(', ') : product;
 
-    // Insert directly into the database without setting any default for foundingyear
-    const result = await pool.query(
-      'INSERT INTO companies (name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear, keymanagement, rate, offeringproducts, pricingstrategy, customerneeds, technologyuse, competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow) ' + 
-      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34) RETURNING *',
-      [
-        name, email, headquarters_location, r_and_d_location, country, productsString, employeestrength, 
-        revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear, 
-        keymanagement, rate, offeringproducts, pricingstrategy, customerneeds, technologyuse, 
-        competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, 
-        comments, employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, 
-        roceandequityRatio, investingcashflow, freecashflow
+    const query = {
+      text: `INSERT INTO companies (
+        name, email, headquarters_location, r_and_d_location, country, product, 
+        employeestrength, revenues, telephone, website, productionvolumes, 
+        keycustomers, region, foundingyear, keymanagement, rate, offeringproducts, 
+        pricingstrategy, customerneeds, technologyuse, competitiveadvantage, 
+        challenges, recentnews, productlaunch, strategicpartenrship, comments, 
+        employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, 
+        roceandequityratio, investingcashflow, freecashflow
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 
+        $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, 
+        $31, $32, $33, $34) RETURNING *`,
+      values: [
+        name || null, email || null, headquarters_location || null, r_and_d_location || null, 
+        country || null, productsString || null, employeestrength || null, 
+        revenues || null, telephone || null, website || null, productionvolumes || null, 
+        keycustomers || null, region || null, foundingyear || null, keymanagement || null, 
+        rate || null, offeringproducts || null, pricingstrategy || null, customerneeds || null, 
+        technologyuse || null, competitiveadvantage || null, challenges || null, 
+        recentnews || null, productlaunch || null, strategicpartenrship || null, 
+        comments || null, employeesperregion || null, businessstrategies || null, 
+        revenue || null, ebit || null, operatingcashflow || null, 
+        roceandequityratio || null, // Now matches DB
+        investingcashflow || null, freecashflow || null
       ]
-    );
+    };
+
+    console.log('Executing query with values:', query.values); // Debug values
+
+    const result = await pool.query(query);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Error adding company:', err);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ 
+      message: 'Internal server error',
+      error: err.message,
+      hint: 'Check column name spelling and case sensitivity' 
+    });
   }
 });
 
