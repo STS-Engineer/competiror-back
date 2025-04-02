@@ -17,15 +17,14 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { 
     name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, 
-    telephone, website, productionvolumes, keycustomers, region, foundingyear, fyear, keymanagement
+    telephone, website, productionvolumes, keycustomers, region, fyear, keymanagement
   } = req.body;
 
   try {
     // Convert product array to JSON format
     const productsJSON = Array.isArray(product) ? JSON.stringify(product) : product;
 
-    // Ensure foundingyear is an integer and fyear is a string
-    const foundingYear = foundingyear ? parseInt(foundingyear, 10) : null;
+   
     const fYear = fyear ? String(fyear) : null;
 
     console.log('Request Body:', req.body); // Debugging: Log incoming data
@@ -33,13 +32,13 @@ router.post('/', async (req, res) => {
     const result = await pool.query(
       `INSERT INTO companies (
         name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, 
-        telephone, website, productionvolumes, keycustomers, region, foundingyear, fyear, keymanagement
+        telephone, website, productionvolumes, keycustomers, region, fyear, keymanagement
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, , $16
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
       ) RETURNING *`,
       [
         name, email, headquarters_location, r_and_d_location, country, productsJSON, employeestrength, revenues, 
-        telephone, website, productionvolumes, keycustomers, region, foundingYear, fYear, keymanagement
+        telephone, website, productionvolumes, keycustomers, region,  fYear, keymanagement
       ]
     );
 
