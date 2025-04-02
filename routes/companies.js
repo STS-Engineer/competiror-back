@@ -15,47 +15,20 @@ router.get('/', async (req, res) => {
 
 // Add a new company
 router.post('/', async (req, res) => {
-  // Debug the incoming request
-  console.log('Raw test request body:', req.body);
-
-  // Only destructure the fields we want to test
-  const { 
-    name,
-    foundingyear 
-  } = req.body;
+  const { name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear,  keymanagement, rate, offeringproducts, pricingstrategy, customerneeds,technologyuse,competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion,businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow } = req.body;
 
   try {
-    const query = {
-      text: `INSERT INTO companies (
-        name, 
-        foundingyear
-      ) VALUES ($1, $2) RETURNING *`,
-      values: [
-        name || null, 
-        foundingyear || null
-      ]
-    };
-
-    console.log('Executing test query:', {
-      sql: query.text,
-      values: query.values
-    });
-
-    const result = await pool.query(query);
+    // Check if product is an array before calling join
+    const productsString = Array.isArray(product) ? product.join(', ') : product;
+    
+    const result = await pool.query(
+      'INSERT INTO companies (name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear,  keymanagement, rate, offeringproducts, pricingstrategy, customerneeds,technologyuse,competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion,businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34) RETURNING *',
+      [name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region,foundingyear,  keymanagement, rate, offeringproducts, pricingstrategy, customerneeds,technologyuse,competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion,businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow]
+    );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error('Test insertion error:', err);
-    res.status(500).json({ 
-      message: 'TEST FAILED',
-      error: err.message,
-      details: {
-        receivedData: {
-          name: name,
-          foundingyear: foundingyear
-        },
-        hint: 'Check if the fields exist in the database exactly as spelled'
-      }
-    });
+    console.error('Error adding company:', err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
