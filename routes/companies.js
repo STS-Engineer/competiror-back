@@ -27,8 +27,8 @@ router.post('/', async (req, res) => {
     // Ensure foundingyear is a valid integer or null
     const foundingYearInt = foundingyear ? parseInt(foundingyear, 10) : null;
 
-    // Convert product array to string (if needed)
-    const productsString = Array.isArray(product) ? product.join(', ') : product;
+    // Convert product array to JSON (instead of a string)
+    const productsJSON = Array.isArray(product) ? JSON.stringify(product) : product;
 
     console.log('Request Body:', req.body); // Debugging: Log incoming data
 
@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
         $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33
       ) RETURNING *`,
       [
-        name, email, headquarters_location, r_and_d_location, country, productsString, employeestrength, revenues, 
+        name, email, headquarters_location, r_and_d_location, country, productsJSON, employeestrength, revenues, 
         telephone, website, productionvolumes, keycustomers, region, foundingYearInt, keymanagement, rate, 
         offeringproducts, pricingstrategy, customerneeds, technologyuse, competitiveadvantage, challenges, 
         recentnews, productlaunch, strategicpartenrship, comments, employeesperregion, businessstrategies, 
@@ -58,6 +58,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // Update an existing company
 router.put('/:id', async (req, res) => {
