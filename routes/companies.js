@@ -16,64 +16,48 @@ router.get('/', async (req, res) => {
 // Add a new company
 router.post('/', async (req, res) => {
   // Debug the incoming request
-  console.log('Raw request body:', req.body);
+  console.log('Raw test request body:', req.body);
 
-  // Destructure with null defaults
+  // Only destructure the fields we want to test
   const { 
-    name, email, headquarters_location, r_and_d_location, country, product, employeestrength, 
-    revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear, 
-    keymanagement, rate, offeringproducts, pricingstrategy, customerneeds, technologyuse, 
-    competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, // Note: Typo matches DB
-    comments, employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, 
-    roceandequityratio, // Changed to match DB (all lowercase)
-    investingcashflow, freecashflow 
+    name,
+    foundingyear 
   } = req.body;
 
   try {
-    // Handle array fields
-    const productsString = Array.isArray(product) ? product.join(', ') : product;
-
     const query = {
       text: `INSERT INTO companies (
-        name, email, headquarters_location, r_and_d_location, country, product, 
-        employeestrength, revenues, telephone, website, productionvolumes, 
-        keycustomers, region, foundingyear, keymanagement, rate, offeringproducts, 
-        pricingstrategy, customerneeds, technologyuse, competitiveadvantage, 
-        challenges, recentnews, productlaunch, strategicpartenrship, comments, 
-        employeesperregion, businessstrategies, revenue, ebit, operatingcashflow, 
-        roceandequityratio, investingcashflow, freecashflow
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 
-        $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, 
-        $31, $32, $33, $34) RETURNING *`,
+        name, 
+        foundingyear
+      ) VALUES ($1, $2) RETURNING *`,
       values: [
-        name || null, email || null, headquarters_location || null, r_and_d_location || null, 
-        country || null, productsString || null, employeestrength || null, 
-        revenues || null, telephone || null, website || null, productionvolumes || null, 
-        keycustomers || null, region || null, foundingyear || null, keymanagement || null, 
-        rate || null, offeringproducts || null, pricingstrategy || null, customerneeds || null, 
-        technologyuse || null, competitiveadvantage || null, challenges || null, 
-        recentnews || null, productlaunch || null, strategicpartenrship || null, 
-        comments || null, employeesperregion || null, businessstrategies || null, 
-        revenue || null, ebit || null, operatingcashflow || null, 
-        roceandequityratio || null, // Now matches DB
-        investingcashflow || null, freecashflow || null
+        name || null, 
+        foundingyear || null
       ]
     };
 
-    console.log('Executing query with values:', query.values); // Debug values
+    console.log('Executing test query:', {
+      sql: query.text,
+      values: query.values
+    });
 
     const result = await pool.query(query);
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error('Error adding company:', err);
+    console.error('Test insertion error:', err);
     res.status(500).json({ 
-      message: 'Internal server error',
+      message: 'TEST FAILED',
       error: err.message,
-      hint: 'Check column name spelling and case sensitivity' 
+      details: {
+        receivedData: {
+          name: name,
+          foundingyear: foundingyear
+        },
+        hint: 'Check if the fields exist in the database exactly as spelled'
+      }
     });
   }
 });
-
 
 
 
