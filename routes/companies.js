@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
 // Add a new company
 router.post('/', async (req, res) => {
   const { name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, telephone, website, productionvolumes, keycustomers, region, foundingyear,  keymanagement, rate, offeringproducts, pricingstrategy, customerneeds,technologyuse,competitiveadvantage, challenges, recentnews, productlaunch, strategicpartenrship, comments, employeesperregion,businessstrategies, revenue, ebit, operatingcashflow, roceandequityRatio, investingcashflow, freecashflow } = req.body;
+
   try {
     // Check if product is an array before calling join
     const productsString = Array.isArray(product) ? product.join(', ') : product;
