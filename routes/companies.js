@@ -24,10 +24,10 @@ router.post('/', async (req, res) => {
   } = req.body;
 
   try {
-    // Convert foundingyear to integer if it's a string
-    const foundingYearInt = parseInt(foundingyear, 10) || null;
+    // Ensure foundingyear is a valid integer or null
+    const foundingYearInt = foundingyear ? parseInt(foundingyear, 10) : null;
 
-    // Convert product array to string
+    // Convert product array to string (if needed)
     const productsString = Array.isArray(product) ? product.join(', ') : product;
 
     console.log('Request Body:', req.body); // Debugging: Log incoming data
@@ -58,11 +58,6 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
-
-
-
-
 
 // Update an existing company
 router.put('/:id', async (req, res) => {
