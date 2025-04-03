@@ -25,7 +25,9 @@ router.post('/', async (req, res) => {
     const productsJSON = Array.isArray(product) ? JSON.stringify(product) : product;
 
     // Convert foundingyear to a string explicitly
-    const foundingYearStr = foundingyear ? String(foundingyear) : null;
+    const foundingYearStr = (foundingyear && foundingyear.toString().trim()) 
+  ? foundingyear.toString().trim() 
+  : null;
 
     console.log('📌 Incoming Request Body:', req.body);
     console.log('🔍 Parsed foundingYear:', foundingYearStr, '| Type:', typeof foundingYearStr);
