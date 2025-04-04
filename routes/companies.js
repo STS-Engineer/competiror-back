@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { 
     name, email, headquarters_location, r_and_d_location, country, product, employeestrength, revenues, 
-    telephone, website, productionvolumes, keycustomers, region, foundingyear, keymanagement
+    telephone, website, productionvolumes, keycustomers, region, foundingyear, keymanagement, rate, offeringproducts,  pricingstrategy, customerneeds, technologyuse, competitiveadvantage, challenges, recentnews,  productlaunch, strategicpartenrship, comments,  employeesperregion,  businessstrategies, revenue, ebit,  operatingcashflow,  investingcashflow, freecashflow, roce, equityratio
   } = req.body;
 
   try {
