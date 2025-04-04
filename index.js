@@ -14,5 +14,5 @@ app.use(cors({
   
 app.use('/companies', companyRouter);
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const port = process.env.PORT || 8080;
+app.listen(port, () => console.log(`Listening on port ${port}`));
