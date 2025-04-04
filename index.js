@@ -12,6 +12,7 @@ app.use(cors({
     origin: 'http://4.211.132.216:3000'
   }));
 
+
 app.use('/companies', companyRouter);
 
 const port = process.env.PORT || 8080;
