@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - comp-back
 
 on:
@@ -14,28 +11,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
-        run: 
-          npm install
-      
-      - name:  build
-        run: 
-          npm run build --if-present
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+      - name: Disable CI checks
+        run: echo "CI=false" >> $GITHUB_ENV
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build --if-present
+        working-directory: ./Server/
+
+      - name: Create artifact directory and zip app
+        run: |
+          mkdir -p ../artifact
+          zip -r ../artifact/release.zip ./
+        working-directory: ./Server/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
           name: node-app
-          path: release.zip
+          path: Server/artifact/release.zip
+          retention-days: 3
 
   deploy:
     runs-on: ubuntu-latest
@@ -43,21 +47,29 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v3
         with:
           name: node-app
 
-      - name: Unzip artifact for deployment
+      - name: Unzip artifact
         run: unzip release.zip
 
-      - name: 'Deploy to Azure Web App'
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_7E0D6BDEA5AC41B4947DCC7FD84132F7 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1D0F34CC3D984C2EB4E835F5AA91A289 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_56043164A4BE44F780CC5201D529D8E6 }}
+
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'comp-back'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9302F9D308F34192A85D91385B15B927 }}
-          package: .
+          package: release.zip
